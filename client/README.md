@@ -1,12 +1,85 @@
-# React + Vite
+# AasanFinance
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A financial education platform with features like mentorship, government scheme information, and courses.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- 🏠 Landing page with key information
+- 👥 Mentorship connections
+- 📚 Educational courses
+- 🏛️ Government scheme information
+- 🤖 Interactive chatbot
+- 📱 Responsive design
+- 🌓 Theme switching (Light/Dark/System)
 
-## Expanding the ESLint configuration
+## Tech Stack
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- React
+- Vite
+- TailwindCSS
+- React Router
+- Styled Components
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v19+)
+- npm (v9+)
+
+### Installation
+
+1. Clone the repository:
+```sh
+git clone https://github.com/GTAJIT/AasanFinance.git
+cd AasanFinance/client
+```
+
+2. Install dependencies:
+```sh
+npm install
+```
+
+3. Run development server:
+```sh
+npm run dev
+```
+
+### Available Scripts
+
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run lint` - Run ESLint
+- `npm run preview` - Preview production build
+
+## Project Structure
+
+```
+client/
+├── src/
+│   ├── components/     # Reusable components
+│   ├── pages/         # Page components
+│   ├── hooks/         # Custom React hooks
+│   ├── assets/        # Static assets
+│   ├── App.jsx        # Root component
+│   └── main.jsx       # Entry point
+├── public/            # Public assets
+└── vite.config.js     # Vite configuration
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+© 2025 CodesByJit. All rights reserved.
+
+## Contact
+
+- Email: aasanfinace@gmail.com
+- Location: Kolkata, India
