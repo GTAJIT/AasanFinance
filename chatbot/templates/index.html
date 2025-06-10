@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FinanceBot Chat</title>
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div id="chatbot" onclick="toggleChat()">💬</div>
+
+    <div id="chatbox" class="flex flex-col">
+        <div id="chat-header" class="flex justify-between items-center bg-blue-500 text-white p-4 text-lg font-semibold rounded-t-2xl">
+            <strong>Ask FinanceBot 💬</strong>
+            <button onclick="toggleChat()" class="text-white text-xl font-bold ml-4 focus:outline-none">&times;</button>
+        </div>
+        <div id="chat-messages" class="flex-grow p-4 overflow-y-auto bg-gray-50">
+            </div>
+        <input type="text" id="user-input" placeholder="Ask about taxes, savings..." onkeypress="handleKey(event)"
+               class="w-full p-4 border-t border-gray-200 outline-none text-base rounded-b-2xl focus:ring-2 focus:ring-blue-400" />
+    </div>
+
+    <script>
+        /**
+         * Toggles the visibility and animation of the chatbox.
+         */
+        function toggleChat() {
+            const chatbox = document.getElementById("chatbox");
+            chatbox.classList.toggle("open"); // Add/remove 'open' class for animation
+        }
+
+        /**
+         * Handles the Enter key press in the input field to send a message.
+         * @param {KeyboardEvent} event The keyboard event.
+         */
+        function handleKey(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        }
+
+        /**
+         * Sends the user's message to the Flask backend and displays the bot's reply.
+         */
+        async function sendMessage() {
+            const userInput = document.getElementById("user-input");
+            const chatMessages = document.getElementById("chat-messages");
+
+            const userMessage = userInput.value;
+            if (!userMessage.trim()) return; // Don't send empty messages
+
+            // Show user message immediately
+            chatMessages.innerHTML += `<div class="message user"><strong>You:</strong> ${userMessage}</div>`;
+            userInput.value = ""; // Clear input field
+            chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
+
+            try {
+                // Show a loading indicator while waiting for the AI's response
+                chatMessages.innerHTML += `<div class="message bot loading"><strong>Bot:</strong> Thinking...</div>`;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                const response = await fetch("/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message: userMessage })
+                });
+
+                const data = await response.json();
+                
+                // Remove loading indicator before displaying the actual reply
+                const loadingMessage = chatMessages.querySelector('.message.bot.loading');
+                if (loadingMessage) {
+                    loadingMessage.remove();
+                }
+
+                if (response.ok) { // Check if the HTTP status code is 2xx (success)
+                    chatMessages.innerHTML += `<div class="message bot"><strong>Bot:</strong> ${data.reply}</div>`;
+                } else {
+                    // Handle server-side errors specifically
+                    chatMessages.innerHTML += `<div class="message error"><strong>Error:</strong> ${data.reply || 'Something went wrong on the server.'}</div>`;
+                }
+                
+                chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom after adding bot message
+
+            } catch (error) {
+                // Remove loading indicator on network error or other client-side errors
+                const loadingMessage = chatMessages.querySelector('.message.bot.loading');
+                if (loadingMessage) {
+                    loadingMessage.remove();
+                }
+                chatMessages.innerHTML += `<div class="message error"><strong>Error:</strong> Could not connect to the server. Please check your internet connection or try again later.</div>`;
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        // Initialize chatbox state on page load (hidden by default)
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatbox = document.getElementById('chatbox');
+            // Ensure display is flex when 'open' class is not present, to correctly manage visibility via classes
+            chatbox.style.display = 'flex'; 
+            chatbox.classList.remove('open'); // Ensure it's closed initially on page load
+        });
+
+    </script>
+</body>
+</html>

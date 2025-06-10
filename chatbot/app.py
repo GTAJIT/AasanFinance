@@ -1,19 +1,20 @@
 from flask import Flask, render_template, request, jsonify
 import requests
 import json
-
+import os
+from dotenv import load_dotenv
+load_dotenv()  # Load environment variables from .env file
+# This is a simple Flask application that integrates with the Google Gemini API
 app = Flask(__name__)
 
 # IMPORTANT: As per Canvas instructions, leave the API key as an empty string.
 # Canvas will automatically provide it at runtime.
 # If you are running this locally outside of the Canvas platform and need to test,
 # replace "" with your actual Google Cloud API Key that has access to Gemini API.
-GEMINI_API_KEY = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=GEMINI_API_KEY"
-
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')  # Use environment variable for security
 # Gemini API endpoint for text generation
 # We'll use 'gemini-1.5-flash' for a good balance of speed and capability.
-GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
-
+GEMINI_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
 @app.route('/')
 def home():
     # Renders the index.html template for the main page
@@ -64,7 +65,8 @@ def chat():
 
         # If a GEMINI_API_KEY is provided (for local testing), append it to the URL.
         # For Canvas, the platform handles the API key injection automatically.
-        api_url_to_use = f"{GEMINI_API_URL}?key={GEMINI_API_KEY}" if GEMINI_API_KEY else GEMINI_API_URL
+        api_url_to_use = GEMINI_API_URL
+        print(GEMINI_API_KEY)
 
         # Make the POST request to the Gemini API
         response = requests.post(api_url_to_use, headers=headers, data=json.dumps(payload))
