@@ -1,6 +1,5 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { pics } from '../hooks/useSocials'
 
 export default function Landing() {
   return (
@@ -27,7 +26,7 @@ export default function Landing() {
               </div>
             </div>
             <div className="mt-12 lg:mt-0">
-              <img src="/main_assets/demo.ppng" alt="Financial Management" className="w-full" />
+              <img src="/public/main_assets/Personal-Finance-Management-scaled-1.webp" alt="Financial Management" className="w-full" />
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@ import requests
 import json
 import os
 from dotenv import load_dotenv
+import re
 load_dotenv()
 from flask_cors import CORS
 
@@ -11,6 +12,46 @@ CORS(app)
 
 GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 GEMINI_API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+
+def format_response(text):
+    # Remove markdown formatting
+    text = re.sub(r'\*\*(.*?)\*\*', r'\1', text)
+    text = re.sub(r'\*(.*?)\*', r'\1', text)
+    
+    # Format section headings
+    text = re.sub(r'^(\d+\..*?):', r'\n\1:\n', text, flags=re.MULTILINE)
+    
+    # Format lists with proper indentation
+    text = re.sub(r'^\* (.+)$', r'  • \1', text, flags=re.MULTILINE)
+    
+    # Add spacing after periods, excluding numbered lists
+    text = re.sub(r'\.(?! )(?!\d)', '. ', text)
+    
+    # Add extra line break before new sections
+    text = re.sub(r'\n(\d+\.)', r'\n\n\1', text)
+    
+    # Clean up multiple spaces
+    text = re.sub(r' +', ' ', text)
+    
+    # Add proper spacing between paragraphs
+    text = re.sub(r'\n\s*\n', '\n\n', text)
+    
+    # Ensure consistent spacing after bullet points
+    text = re.sub(r'•\s*', '• ', text)
+    
+    # Add extra spacing after sections
+    text = re.sub(r'(:)\n', r'\1\n\n', text)
+    
+    # Format disclaimers with extra spacing
+    text = re.sub(r'(Disclaimer:.*)', r'\n\n\1\n', text, flags=re.MULTILINE)
+    
+    # Ensure proper spacing around important notes
+    text = re.sub(r'(Note:.*)', r'\n\1\n', text, flags=re.MULTILINE)
+    
+    # Clean up any remaining multiple newlines
+    text = re.sub(r'\n{3,}', '\n\n', text)
+    
+    return text.strip()
 
 @app.route('/')
 def home():
@@ -29,12 +70,12 @@ def chat():
             "You are 'FinanceBot', an expert AI assistant specializing in financial education, "
             "government schemes in India, and tax-related queries. "
             "Provide clear, concise, and helpful information. "
-            "Simplify complex financial topics and government schemes. "
-            "Always maintain a helpful, encouraging, and educational tone. "
+            "Format your responses with proper spacing and bullet points using • instead of *. "
+            "Use clear headings and proper paragraph breaks. "
+            "Avoid using markdown formatting like ** or *. "
             "If a user asks for personal financial advice, explicitly state that you are an AI "
             "and cannot provide personalized advice, and instead recommend consulting "
-            "a qualified financial advisor, tax professional, or the official government sources "
-            "for their specific situation."
+            "a qualified financial advisor, tax professional, or the official government sources."
         )
 
         payload = {
@@ -59,7 +100,7 @@ def chat():
            result['candidates'][0].get('content') and \
            result['candidates'][0]['content'].get('parts') and \
            len(result['candidates'][0]['content']['parts']) > 0:
-            reply = result['candidates'][0]['content']['parts'][0]['text']
+            reply = format_response(result['candidates'][0]['content']['parts'][0]['text'])
         else:
             reply = "Sorry, I couldn't get a valid response from the AI. The API response was empty or malformed."
             print(f"Unexpected API response structure: {result}") 

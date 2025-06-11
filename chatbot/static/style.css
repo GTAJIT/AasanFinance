@@ -140,8 +140,8 @@ body {
     outline: none; /* No outline on focus */
     font-size: 1rem;
     border-top: 1px solid #e2e8f0; /* Light border at the top */
-    border-bottom-left-radius: 1.5rem; /* Rounded bottom corners */
-    border-bottom-right-radius: 1.5rem;
+    /* border-bottom-left-radius: 1.5rem;
+    border-bottom-right-radius: 1.5rem; */
 }
 
 /* Responsive adjustments for smaller screens */
